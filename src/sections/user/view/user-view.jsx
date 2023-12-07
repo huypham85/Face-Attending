@@ -165,9 +165,9 @@ export default function UserPage() {
     filterName,
   });
 
-  const handleDelete = (uid, userId, role) => {
+  const handleDelete = async (uid, userId, role) => {
     if (role === 'student') {
-      rejectFaceRequest(userId);
+      await rejectFaceRequest(userId);
       const values = Object.keys(listStudents.find((student) => userId === student.id).courses);
       values.forEach(async (courseId) => {
         await deleteStudentCourses(userId, courseId);
@@ -179,7 +179,7 @@ export default function UserPage() {
           }
         }
       });
-      deleteStudentAttendance(userId);
+      await deleteStudentAttendance(userId);
     } else {
       const values = Object.keys(listTeachers.find((teacher) => userId === teacher.id).courses || {});
       values.map(async (courseId) => {

@@ -64,10 +64,6 @@ function FormAddUser({handleClose}) {
       },
     validate,
     onSubmit: async (values) => {
-      // insert course to student courses db
-      values.students.map((student) => {
-        insertCourseToStudent(student, values.id)
-      });
       const studentsData = listStudents.map(({ id, name, photo }) => ({ id, name, photo }));
       values.students = studentsData.filter(student => values.students.includes(student.id));
       const courseData = {...values};
@@ -80,7 +76,11 @@ function FormAddUser({handleClose}) {
         return acc;
       }, {})
 
-      writeCourseData(courseData, values.teacherId);
+      await writeCourseData(courseData, values.teacherId);
+      // insert course to student courses db
+      values.students.map(async (student) => {
+        await insertCourseToStudent(student.id, values.id)
+      });
       handleClose();
     },
   });

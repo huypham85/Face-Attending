@@ -90,13 +90,13 @@ export const insertStudentToCourse = (courseId, studentId, studentPhoto, student
   update(ref(db, 'Courses/' + courseId + '/students'), updates).then((r) => {});
 };
 
-export const writeSessionData = (sessionData) => {
-  update(ref(db, 'Sessions/' + sessionData.date + '/' + sessionData.id), sessionData).then(
+export const writeSessionData = async (sessionData) => {
+  await update(ref(db, 'Sessions/' + sessionData.date + '/' + sessionData.id), sessionData).then(
     (r) => {}
   );
   const updates = {};
   updates[sessionData.id] = true;
-  update(
+  await update(
     ref(db, 'Courses/' + sessionData.courseId + '/sessions/' + sessionData.date),
     updates
   ).then((r) => {});
