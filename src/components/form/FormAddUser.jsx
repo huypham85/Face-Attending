@@ -91,36 +91,9 @@ function FormAddUser({handleClose}) {
     onSubmit: async (values) => {
       const { confirmPassword, password, role, ...userData } = values;
 
-      // insert student to course students db
-      if (role === "student"){
-        values.courses.map(course => {
-          const courseId = course.split(":")[0];
-          insertStudentToCourse(courseId, values.id, values.photo, values.name);
-          const courseInfo = listCourses.find(course => course.id === courseId);
-          const sessionInfo = courseInfo.sessions;
-          for (const date in sessionInfo) {
-            for(const id in sessionInfo[date]){
-              insertStudentToSession(date, id, values.id);
-            }
-          }
-        })
-      }else {
-        values.courses.map(course => {
-          const courseId = course.split(":")[0];
-          insertTeacherToCourse(courseId, values.id);
-          const courseInfo = listCourses.find(course => course.id === courseId);
-          const sessionInfo = courseInfo.sessions;
-          for (const date in sessionInfo) {
-            for(const id in sessionInfo[date]){
-              insertTeacherToSession(date, id, values.id, values.name);
-            }
-          }
-        })
-      }
-
       userData.courses = userData.courses.reduce((acc, course) => {
         const [courseCode, isSelected] = course.split(': ');
-        acc[courseCode] = isSelected === "true";
+        acc[courseCode] = isSelected === 'true';
         return acc;
       }, {});
       const dobParts = userData.dob.split('-');
@@ -128,15 +101,36 @@ function FormAddUser({handleClose}) {
         userData.dob = `${dobParts[2]}-${dobParts[1]}-${dobParts[0]}`;
       }
 
-      const auth = getAuth();
       const uid = await signup(values.email, values.password);
       // insert user to Users table
-      writeUserData(uid, values.id, values.email, values.role);
-      if (values.role === "student") {
-        writeStudentData(userData);
-      }else {
-        const {dob, mainClass, ...teacherData} = userData;
-        writeTeacherData(teacherData);
+      await writeUserData(uid, values.id, values.email, values.role);
+      if (values.role === 'student') {
+        await writeStudentData(userData);
+        values.courses.map(async (course) => {
+          const courseId = course.split(':')[0];
+          await insertStudentToCourse(courseId, values.id, values.photo, values.name);
+          const courseInfo = listCourses.find((course) => course.id === courseId);
+          const sessionInfo = courseInfo.sessions;
+          for (const date in sessionInfo) {
+            for (const id in sessionInfo[date]) {
+              await insertStudentToSession(date, id, values.id);
+            }
+          }
+        });
+      } else {
+        const { dob, mainClass, ...teacherData } = userData;
+        await writeTeacherData(teacherData);
+        values.courses.map(async (course) => {
+          const courseId = course.split(':')[0];
+          await insertTeacherToCourse(courseId, values.id);
+          const courseInfo = listCourses.find((course) => course.id === courseId);
+          const sessionInfo = courseInfo.sessions;
+          for (const date in sessionInfo) {
+            for (const id in sessionInfo[date]) {
+              await insertTeacherToSession(date, id, values.id, values.name);
+            }
+          }
+        });
       }
       handleClose();
     },
