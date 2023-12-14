@@ -105,7 +105,7 @@ function FormAddSession({handleClose}) {
     <form onSubmit={formik.handleSubmit}>
       <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{my: 2}}/>
       <Grid item width={300}>
-        <InputLabel variant="standard" htmlFor="uncontrolled-native">
+        <InputLabel>
           Mã khoá học
         </InputLabel>
         <Select
@@ -134,7 +134,7 @@ function FormAddSession({handleClose}) {
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <FormLabel>Ngày học:</FormLabel>
+          <FormLabel>Ngày học</FormLabel>
           <TextField
             name="date"
             type="date"

@@ -1,16 +1,10 @@
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import {Button, CardActions, CardContent, Grid} from "@mui/material";
-import Box from "@mui/material/Box";
 
 // ----------------------------------------------------------------------
-const bull = (<Box
-  component="span"
-  sx={{display: 'inline-block', mx: '2px', transform: 'scale(0.8)'}}
->
-  •
-</Box>);
-export default function PostCard({course, setOpen, setCourse}) {
+
+export default function CourseCard({course, setOpen, setCourse}) {
   const handleShowAttendance = () => {
     setOpen(true);
     setCourse({...course});

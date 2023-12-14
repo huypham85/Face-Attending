@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Paper from '@mui/material/Paper';
 import { Grid } from '@mui/material';
-import PostCard from '../../blog/post-card';
+import CourseCard from '../../students/course-card';
 import SessionInfo from '../../../components/Modal/SessionsInfo';
 // ----------------------------------------------------------------------
 
@@ -80,7 +80,7 @@ export default function StudentDetailView() {
       </Stack>
       <Grid container spacing={2}>
         {Object.keys(student?.courses || {}).map((courseStudent) => (
-          <PostCard
+          <CourseCard
             key={courseStudent}
             setOpen={setOpenModal}
             setCourse={setCurrentCourse}

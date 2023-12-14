@@ -8,7 +8,7 @@ export default function StudentDetailPage() {
   return (
     <>
       <Helmet>
-        <title> Danh sách sinh viên </title>
+        <title> Thông tin sinh viên </title>
       </Helmet>
 
       <StudentDetailView />

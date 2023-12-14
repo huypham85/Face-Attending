@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-import { StudentView } from 'src/sections/blog/view';
+import { StudentView } from 'src/sections/students/view';
 
 // ----------------------------------------------------------------------
 
@@ -8,7 +8,7 @@ export default function StudentPage() {
   return (
     <>
       <Helmet>
-        <title> Danh sách sinh viên</title>
+        <title> Quản lý sinh viên</title>
       </Helmet>
 
       <StudentView />

@@ -12,9 +12,6 @@ export const validate = values => {
   if (!values.endTime) {
     errors.endTime = 'Vui lòng nhập thời gian kết thúc của tiết học';
   }
-  if (!values.id) {
-    errors.id = 'Vui lòng nhập id của tiết học';
-  }
   if (!values.roomNo) {
     errors.roomNo = 'Vui lòng nhập tên phòng học';
   }

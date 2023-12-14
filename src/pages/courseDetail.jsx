@@ -8,7 +8,7 @@ export default function CourseDetail() {
   return (
     <>
       <Helmet>
-        <title> Danh sách sinh viên </title>
+        <title> Quản lý tiết học </title>
       </Helmet>
 
       <CourseDetailView />

@@ -1,63 +1,53 @@
-import {useEffect, useState} from 'react';
-
-import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
+
+import { getDatabase, onValue, ref } from 'firebase/database';
+import { useEffect, useState } from 'react';
+import Scrollbar from '../../../components/scrollbar/scrollbar';
 import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import { deleteUserByUid } from '../../../common/services/services';
+import TableEmptyRows from '../student-empty-rows';
+import { applyFilter, emptyRows, getComparator } from '../utils';
+import TableNoData from '../student-no-data';
 import TablePagination from '@mui/material/TablePagination';
-
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
-
-import TableNoData from '../table-no-data';
-import CourseTableRow from '../course-table-row';
-import UserTableHead from '../course-table-head';
-import TableEmptyRows from '../table-empty-rows';
-import CourseTableToolbar from '../course-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
-import CustomModal from "../../../components/Modal/CustomModal";
-import {getDatabase, onValue, ref} from "firebase/database";
-import {deleteUserByUid} from "../../../common/services/services";
-import FormAddCourse from "../../../components/form/FormAddCourse";
-import FormAddSession from "../../../components/form/FromAddSession";
-import {useNavigate} from "react-router-dom";
+import Card from '@mui/material/Card';
+import StudentTableRow from '../student-table-row';
+import StudentTableHead from '../student-table-head';
+import StudentTableToolbar from '../student-table-toolbar';
 
 // ----------------------------------------------------------------------
 
-export default function CoursePage() {
+export default function StudentView() {
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   const [selected, setSelected] = useState([]);
   const [orderBy, setOrderBy] = useState('name');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [openModalCourse, setOpenModalCourse] = useState(false);
-  const [openModalSession, setOpenModalSession] = useState(false);
 
   const dbRef = getDatabase();
-  const coursesRef = ref(dbRef, 'Courses');
-  const [listCourses, setListCourses] = useState([]);
-
+  const coursesRef = ref(dbRef, 'Students');
+  const [listStudents, setListStudents] = useState([]);
 
   useEffect(() => {
-    const coursesSub = onValue(coursesRef, (snapshot) => {
+    const studentsSub = onValue(coursesRef, (snapshot) => {
       if (snapshot.exists()) {
-        const coursesData = Object.keys(snapshot.val()).map((key) => ({
+        const studentsData = Object.keys(snapshot.val()).map((key) => ({
           id: key,
           ...snapshot.val()[key],
         }));
-        setListCourses(coursesData);
+        setListStudents(studentsData);
       }
     });
 
     return () => {
-      coursesSub();
+      studentsSub();
     };
   }, []);
+
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
     if (id !== '') {
@@ -68,7 +58,7 @@ export default function CoursePage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = listCourses.map((n) => n.name);
+      const newSelecteds = listStudents.map((n) => n.name);
       setSelected(newSelecteds);
       return;
     }
@@ -108,81 +98,66 @@ export default function CoursePage() {
   };
 
   const dataFiltered = applyFilter({
-    inputData: listCourses,
+    inputData: listStudents,
     comparator: getComparator(order, orderBy),
     filterName,
   });
-
-  const navigate = useNavigate();
-  const handleShowSessions = (courseId) => {
-    navigate(`/courses/${courseId}`)
-  }
 
   const notFound = !dataFiltered.length && !!filterName;
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Khoá học</Typography>
-
-        <Stack direction="row" spacing={3}>
-          <Button onClick={() => setOpenModalCourse(true)} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-            Thêm khoá học
-          </Button>
-          <Button onClick={() => setOpenModalSession(true)} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-            Thêm tiết học
-          </Button>
-        </Stack>
+        <Typography variant="h4">Sinh viên</Typography>
       </Stack>
-      <CustomModal open={openModalCourse} title="Thêm khoá học">
-        <FormAddCourse handleClose={() => setOpenModalCourse(false)} />
-      </CustomModal>
-      <CustomModal open={openModalSession} title="Thêm tiết học">
-        <FormAddSession handleClose={() => setOpenModalSession(false)} />
-      </CustomModal>
+
       <Card>
-        <CourseTableToolbar
+        <StudentTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
         />
+
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <StudentTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={listCourses.length}
+                rowCount={listStudents.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Tên khoá học' },
-                  { id: 'id', label: 'Mã khoá học' },
-                  { id: 'teacher', label: 'Giảng viên' },
-                  { id: 'credits', label: 'Số tín chỉ' },
-                  { id: '' },
+                  { id: 'id', label: 'Mã sinh viên' },
+                  { id: 'name', label: 'Tên sinh viên' },
+                  { id: 'dob', label: 'Ngày sinh' },
+                  { id: 'email', label: 'Email' },
+                  { id: 'gender', label: 'Giới tính' },
+                  { id: 'mainClass', label: 'Lớp hành chính' },
                 ]}
               />
               <TableBody>
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
-                    <CourseTableRow
+                    <StudentTableRow
                       key={row.id}
                       name={row.name}
                       id={row.id}
-                      teacher={row.teacherId}
-                      credits={row.numberCredits}
+                      email={row.email}
+                      gender={row.gender}
+                      dob={row.dob}
+                      mainClass={row.mainClass}
                       selected={selected.indexOf(row.name) !== -1}
-                      handleShowSessions={handleShowSessions}
+                      handleDeleteUser={deleteUserByUid}
                       handleClick={(event) => handleClick(event, row.name)}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, listCourses.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, listStudents.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -194,7 +169,7 @@ export default function CoursePage() {
         <TablePagination
           page={page}
           component="div"
-          count={listCourses.length}
+          count={listStudents.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

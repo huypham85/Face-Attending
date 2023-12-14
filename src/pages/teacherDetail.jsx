@@ -8,7 +8,7 @@ export default function TeacherDetailPage() {
   return (
     <>
       <Helmet>
-        <title> Danh sách giảng viên </title>
+        <title> Thông tin giảng viên </title>
       </Helmet>
 
       <TeacherDetailView />
