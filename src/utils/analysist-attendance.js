@@ -4,3 +4,8 @@ export const analysisAttendance = (listStudents) => {
 
   return `${nonEmptyValuesCount}/${values.length}`;
 };
+
+export const formatDateTime = (date, time) => {
+  return `${date} ${time}`;
+};
+

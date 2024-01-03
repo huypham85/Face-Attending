@@ -7,6 +7,7 @@ import Card from '@mui/material/Card';
 import Container from '@mui/material/Container';
 import { child, get, getDatabase, ref } from 'firebase/database';
 import { columnsSession } from '../../../common/constant/constant';
+import { analysisAttendance, formatDateTime } from 'src/utils/analysist-attendance';
 import Paper from '@mui/material/Paper';
 
 import {
@@ -20,7 +21,6 @@ import {
   Grid,
 } from '@mui/material';
 import { AttendanceCard } from 'src/components/card/AttendanceCard';
-import { analysisAttendance } from 'src/utils/analysist-attendance';
 // ----------------------------------------------------------------------
 
 export default function CourseDetailView() {
@@ -35,6 +35,8 @@ export default function CourseDetailView() {
   const arrayAttendance = [];
   const dbRef = ref(getDatabase());
 
+  const sortModel = [{ field: 'startTime', sort: 'desc' }];
+
   const fetchData = async (data) => {
     const sessionInfo = data.sessions;
     const promises = [];
@@ -44,7 +46,16 @@ export default function CourseDetailView() {
           if (snapshot.exists()) {
             const sessionInfo = snapshot.val();
             sessionInfo['analysisAttendance'] = analysisAttendance(sessionInfo.students);
-            console.log(sessionInfo);
+            sessionInfo['endTime'] = formatDateTime(sessionInfo.date, sessionInfo.endTime);
+            sessionInfo['startTime'] = formatDateTime(sessionInfo.date, sessionInfo.startTime);
+            sessionInfo['endCheckInTime'] = sessionInfo['endCheckInTime']
+              .split(' ')
+              .reverse()
+              .join(' ');
+            sessionInfo['startCheckInTime'] = sessionInfo['startCheckInTime']
+              .split(' ')
+              .reverse()
+              .join(' ');
             arrayAttendance.push(sessionInfo);
           }
         });
@@ -126,6 +137,8 @@ export default function CourseDetailView() {
           }}
           pageSizeOptions={[5, 10]}
           onCellClick={handleRowClick}
+          sortModel={sortModel}
+          disableColumnMenu={true}
         />
       </Card>
       <Dialog
