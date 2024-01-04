@@ -35,11 +35,12 @@ export function AuthProvider({ children }) {
     try {
       setLoginInfo({ email: email, password: password });
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      await get(child(dbRef, `Users/` + userCredential.user.uid)).then((snapshot) => {
-        if (snapshot.exists()) {
-          setPersonalInfo(snapshot.val());
-        }
-      });
+      const snapshot = await get(child(dbRef, `Users/` + userCredential.user.uid));
+      
+      if (snapshot.exists()) {
+        setPersonalInfo(snapshot.val());
+      }
+  
       // Store email and password in localStorage
       localStorage.setItem('email', email);
       localStorage.setItem('password', password);

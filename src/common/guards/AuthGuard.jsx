@@ -20,7 +20,7 @@ export function PrivateRoute({ children }) {
             toast.warn('Email hoặc mật khẩu không chính xác!');
             await logout();
           } else {
-            login(storedEmail, storedPassword)
+            login(storedEmail, storedPassword);
           }
         } catch (error) {
           navigate('/login');
