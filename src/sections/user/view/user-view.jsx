@@ -253,8 +253,8 @@ export default function UserPage() {
                       role={row.role}
                       avatarUrl={
                         row.role === 'student'
-                          ? listStudents.find((student) => student.id === row.id).photo
-                          : listTeachers.find((teacher) => teacher.id === row.id).photo
+                          ? listStudents.find((student) => student.id === row.id)?.photo
+                          : listTeachers.find((teacher) => teacher.id === row.id)?.photo
                       }
                       selected={selected.indexOf(row.email) !== -1}
                       handleDeleteUser={handleDelete}
