@@ -181,7 +181,9 @@ export default function UserPage() {
       });
       await deleteStudentAttendance(userId);
     } else {
-      const values = Object.keys(listTeachers.find((teacher) => userId === teacher.id).courses || {});
+      const values = Object.keys(
+        listTeachers.find((teacher) => userId === teacher.id).courses || {}
+      );
       values.map(async (courseId) => {
         await insertTeacherToCourse(courseId, '');
         const courseInfo = listCourses.find((course) => course.id === courseId);
@@ -250,7 +252,9 @@ export default function UserPage() {
                       id={row.id}
                       role={row.role}
                       avatarUrl={
-                        row.avatarUrl ? row.avatarUrl : `/assets/images/avatars/avatar_2.jpg`
+                        row.role === 'student'
+                          ? listStudents.find((student) => student.id === row.id).photo
+                          : listTeachers.find((teacher) => teacher.id === row.id).photo
                       }
                       selected={selected.indexOf(row.email) !== -1}
                       handleDeleteUser={handleDelete}
